@@ -2,10 +2,10 @@ const API_BACKEND = 'http://185.175.208.37';
 
 export default {
   async fetch(request, env) {
-    try {
-      const url = new URL(request.url);
+    const url = new URL(request.url);
 
-      if (url.pathname.startsWith('/api')) {
+    if (url.pathname.startsWith('/api')) {
+      try {
         const apiPath = url.pathname.replace('/api', '');
         const apiUrl = API_BACKEND + apiPath + url.search;
 
@@ -40,21 +40,14 @@ export default {
           status: response.status,
           headers: responseHeaders,
         });
-      }
-
-      const response = await env.ASSETS.fetch(request);
-      
-      if (response.status === 404) {
-        const indexRequest = new Request(url.origin + '/index.html', {
-          method: 'GET',
-          headers: request.headers,
+      } catch (err) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 502,
+          headers: { 'Content-Type': 'application/json' },
         });
-        return env.ASSETS.fetch(indexRequest);
       }
-      
-      return response;
-    } catch (err) {
-      return new Response('Error: ' + err.message, { status: 500 });
     }
+
+    return env.ASSETS.fetch(request);
   },
 };
