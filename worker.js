@@ -8,9 +8,12 @@ export default {
       const apiPath = url.pathname.replace('/api', '');
       const apiUrl = API_BACKEND + apiPath + url.search;
       
+      const headers = new Headers(request.headers);
+      headers.set('Host', 'hoorbookapp.com');
+      
       const apiRequest = new Request(apiUrl, {
         method: request.method,
-        headers: request.headers,
+        headers: headers,
         body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : null,
       });
       
