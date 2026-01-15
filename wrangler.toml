@@ -1,4 +1,4 @@
-name = "hoor-book-dashboard-v2"
+name = "admin-v2"
 main = "./worker.js"
 compatibility_date = "2024-01-01"
 
