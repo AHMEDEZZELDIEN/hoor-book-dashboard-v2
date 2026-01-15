@@ -1,5 +1,6 @@
 const API_BACKEND = 'http://185.175.208.37';
 
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
