@@ -1,4 +1,4 @@
-export const BASE_API = 'http://185.175.208.37';
+export const BASE_API = '/api';
 // export const BASE_API = 'https://hoorbookapp.com';
 // export const BASE_URL = 'https://hoorbookapp.com/';
 // export const BASE_API = 'https://ezz.hoorbookapp.com';
