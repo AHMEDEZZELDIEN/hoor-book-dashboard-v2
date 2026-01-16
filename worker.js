@@ -1,4 +1,4 @@
-const API_BACKEND = 'http://185.175.208.37';
+const API_BACKEND = 'https://api.hoorbookapp.com';
 
 export default {
   async fetch(request, env) {
