@@ -167,9 +167,9 @@
                     <span v-if="admin.view_image === null || admin.view_image === ''">لا يوجد صورة</span>
                     <div v-else-if="typeof admin.view_image === 'object'"></div>
 
-                    <a v-else :href="`${baseApi}/${admin.view_image}`" target="_blank">
+                    <a v-else :href="`${imageBaseUrl}/${admin.view_image}`" target="_blank">
                       <img class="of-contain"
-                        :src="`${baseApi}/${admin.view_image}`"
+                        :src="`${imageBaseUrl}/${admin.view_image}`"
                         alt="صورة المنتج"
                       />
                     </a>
@@ -236,9 +236,9 @@
                         <span v-if="!find.view_image">لا يوجد صورة</span>
                         <div v-else-if="typeof find.view_image === 'object'"></div>
 
-                        <a v-else :href="`${baseApi}/${find.view_image}`" target="_blank">
+                        <a v-else :href="`${imageBaseUrl}/${find.view_image}`" target="_blank">
                           <img class="of-contain"
-                            :src="`${baseApi}/${find.view_image}`"
+                            :src="`${imageBaseUrl}/${find.view_image}`"
                             alt="صورة المنتج"
                           />
                         </a>
@@ -293,9 +293,9 @@
                       <span v-if="!admin.view_slider_image">لا يوجد صورة</span>
                       <div v-else-if="typeof admin.view_slider_image === 'object'"></div>
 
-                      <a v-else :href="`${baseApi}/${admin.view_slider_image}`" target="_blank">
+                      <a v-else :href="`${imageBaseUrl}/${admin.view_slider_image}`" target="_blank">
                         <img class="of-contain"
-                          :src="`${baseApi}/${admin.view_slider_image}`"
+                          :src="`${imageBaseUrl}/${admin.view_slider_image}`"
                           alt="صورة السلايدر"
                         />
                       </a>
@@ -393,9 +393,9 @@
                                   <span v-if="med.view_image === null || med.view_image === ''">لا يوجد صورة</span>
                                   <div v-else-if="typeof med.view_image === 'object'"></div>
 
-                                  <a v-else :href="`${baseApi}/${med.view_image}`" target="_blank">
+                                  <a v-else :href="`${imageBaseUrl}/${med.view_image}`" target="_blank">
                                     <img class="of-contain"
-                                      :src="`${baseApi}/${med.view_image}`"
+                                      :src="`${imageBaseUrl}/${med.view_image}`"
                                       alt="صورة المنتج"
                                     />
                                   </a>
@@ -669,10 +669,10 @@
         <template v-slot:[`item.image`]="{ item }">
           <!--  -->
           <div>
-            <a :href="`${baseApi}/${item.image}`" target="_blank">
+            <a :href="`${imageBaseUrl}/${item.image}`" target="_blank">
               <img
                 class="of-contain"
-                :src="`${baseApi}/${item.image}`"
+                :src="`${imageBaseUrl}/${item.image}`"
                 alt="صورة المنتج"
               />
             </a>
@@ -715,9 +715,9 @@
             <div v-if="item.category.name_ar != null"><b>الاسم بالعربي: </b>{{ item.category.name_ar }}</div>
             <div class="mt-2">
               <div>
-                <a :href="`${baseApi}/${item.category.image}`" target="_blank">
+                <a :href="`${imageBaseUrl}/${item.category.image}`" target="_blank">
                   <img
-                    :src="`${baseApi}/${item.category.image}`" class="of-contain"
+                    :src="`${imageBaseUrl}/${item.category.image}`" class="of-contain"
                     alt="صورة الفئة"
                   />
                 </a>
@@ -924,7 +924,7 @@ import VSelectColorWithValidation from "../components/inputs/VSelectColorWithVal
 import VTextAreaWithValidation from "../components/inputs/VTextAreaWithValidation";
 
 import { mapActions } from "vuex";
-import { BASE_API } from "../config/config";
+import { BASE_API, BASE_URL } from "../config/config";
 import VueQrcode from "vue-qrcode-component";
 
 export default {
@@ -1025,8 +1025,8 @@ export default {
     showMediaError: false,
     showColorError: false,
     showColorMediaError: false,
-    baseApi: window.location.origin,
     baseApi: BASE_API,
+    imageBaseUrl: BASE_URL.replace(/\/$/, ''),
     color_code: null,
   }),
   components: {

@@ -111,9 +111,9 @@
                   <div class="mb-3">
                     <b>صورة المنتج: </b>
                     <span>
-                      <a :href="`${baseApi}/${order.product.image}`" target="_blank">
+                      <a :href="`${imageBaseUrl}/${order.product.image}`" target="_blank">
                         <img
-                          :src="`${baseApi}/${order.product.image}`" class="of-contain"
+                          :src="`${imageBaseUrl}/${order.product.image}`" class="of-contain"
                           alt="صورة الفئة"
                         />
                       </a>
@@ -569,7 +569,7 @@ const headerConst = { align: "center", sortable: false };
 import VSelectWithValidation from "../components/inputs/VSelectWithValidation";
 import VTextFieldWithValidation from "../components/inputs/VTextFieldWithValidation";
 import { mapActions } from "vuex";
-import { BASE_API } from "../config/config";
+import { BASE_API, BASE_URL } from "../config/config";
 
 export default {
   props: {
@@ -643,6 +643,7 @@ export default {
     index: null,
     baseUrl: window.location.origin,
     baseApi: BASE_API,
+    imageBaseUrl: BASE_URL.replace(/\/$/, ''),
   }),
   components: {
     VSelectWithValidation,

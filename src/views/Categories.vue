@@ -69,9 +69,9 @@
                     <span v-if="admin.view_image === null || admin.view_image === ''">لا يوجد صورة</span>
                     <div v-else-if="typeof admin.view_image === 'object'"></div>
 
-                    <a v-else :href="`${baseApi}/${admin.view_image}`" target="_blank">
+                    <a v-else :href="`${imageBaseUrl}/${admin.view_image}`" target="_blank">
                       <img class="of-contain"
-                        :src="`${baseApi}/${admin.view_image}`"
+                        :src="`${imageBaseUrl}/${admin.view_image}`"
                         alt="صورة المنتج"
                       />
                     </a>
@@ -219,9 +219,9 @@
               src="../assets/imgs/profile-img.jpg"
               alt="صورة المنتج"
             />
-            <a v-else :href="`${baseApi}/${item.image}`" target="_blank">
+            <a v-else :href="`${imageBaseUrl}/${item.image}`" target="_blank">
               <img class="of-contain"
-                :src="`${baseApi}/${item.image}`"
+                :src="`${imageBaseUrl}/${item.image}`"
                 alt="صورة المنتج"
               />
             </a>
@@ -367,7 +367,7 @@ import VTextFieldWithValidation from "../components/inputs/VTextFieldWithValidat
 import VFileInputWithValidation from "../components/inputs/VFileInputWithValidation";
 import VSelectWithValidation from "../components/inputs/VSelectWithValidation";
 import { mapActions } from "vuex";
-import { BASE_API } from "../config/config";
+import { BASE_API, BASE_URL } from "../config/config";
 
 export default {
   props: {
@@ -426,6 +426,7 @@ export default {
     file: null,
     baseUrl: window.location.origin,
     baseApi: BASE_API,
+    imageBaseUrl: BASE_URL.replace(/\/$/, ''),
   }),
   components: {
     VTextFieldWithValidation,
