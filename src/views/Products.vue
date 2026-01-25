@@ -236,9 +236,9 @@
                         <span v-if="!find.view_image">لا يوجد صورة</span>
                         <div v-else-if="typeof find.view_image === 'object'"></div>
 
-                        <a v-else :href="`${imageBaseUrl}/${find.view_image}`" target="_blank">
+                        <a v-else :href="`${find.view_image}`" target="_blank">
                           <img class="of-contain"
-                            :src="`${imageBaseUrl}/${find.view_image}`"
+                            :src="`${find.view_image}`"
                             alt="صورة المنتج"
                           />
                         </a>
