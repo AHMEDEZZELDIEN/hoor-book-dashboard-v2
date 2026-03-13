@@ -74,6 +74,14 @@
                     prepend-icon="money"
                     type="text"
                   />
+
+                  <VTextFieldWithValidation
+                    rules="regex:^[0-9.]*$"
+                    v-model="admin.minimum_delivery_free_cost"
+                    label="الحد الأدنى للتوصيل المجاني"
+                    prepend-icon="local_shipping"
+                    type="text"
+                  />
                 </v-card-text>
 
                 <v-card-actions>
@@ -221,6 +229,13 @@
           <v-chip v-else small color="secondary" dark>غير متوفر</v-chip>
         </template>
 
+        <template v-slot:[`item.minimum_delivery_free_cost`]="{ item }">
+          <div v-if="item.minimum_delivery_free_cost != null">
+            <span>{{ item.minimum_delivery_free_cost }}</span>
+          </div>
+          <v-chip v-else small color="secondary" dark>غير متوفر</v-chip>
+        </template>
+
         <template v-slot:[`item.created_at`]="{ item }">
           <span v-if="item.created_at != null">{{ item.created_at | moment("dddd, MMMM Do YYYY") }}</span>
           <v-chip v-else small color="secondary" dark>غير متوفر</v-chip>
@@ -319,6 +334,7 @@ export default {
       name: "",
       name_ar: "",
       cost: null,
+      minimum_delivery_free_cost: 0,
       city_id: null,
     },
     filter: {
@@ -343,6 +359,7 @@ export default {
       { text: "الاسم بالعربية", value: "name_ar", ...headerConst },
       { text: "المدينة", value: "city", ...headerConst },
       { text: "التكلفة", value: "cost", ...headerConst },
+      { text: "الحد الأدنى للتوصيل المجاني", value: "minimum_delivery_free_cost", ...headerConst },
       { text: "أنشئت في", value: "created_at", ...headerConst },
       { text: "تم التحديث في", value: "updated_at", ...headerConst },
       { text: "عمليات", value: "actions", ...headerConst },
@@ -514,6 +531,7 @@ export default {
         name: "",
         name_ar: "",
         cost: null,
+        minimum_delivery_free_cost: 0,
         city_id: null,
       };
     },
@@ -535,6 +553,7 @@ export default {
       this.admin.name_ar = item.name_ar;
       this.admin.city_id = item.city_id;
       this.admin.cost = item.cost;
+      this.admin.minimum_delivery_free_cost = item.minimum_delivery_free_cost != null ? item.minimum_delivery_free_cost : 0;
     },
     saveItem() {
       this.connecting = true;
@@ -542,6 +561,7 @@ export default {
       if (this.admin.name) formdata.append("name", this.admin.name);
       if (this.admin.name_ar) formdata.append("name_ar", this.admin.name_ar);
       if (this.admin.cost) formdata.append("cost", Number(this.admin.cost));
+      formdata.append("minimum_delivery_free_cost", this.admin.minimum_delivery_free_cost != null ? Number(this.admin.minimum_delivery_free_cost) : 0);
       if (this.admin.city_id) formdata.append("city_id", this.admin.city_id);
 
       if (this.edit) {
@@ -551,6 +571,7 @@ export default {
             name: this.admin.name,
             name_ar: this.admin.name_ar,
             cost: Number(this.admin.cost),
+            minimum_delivery_free_cost: this.admin.minimum_delivery_free_cost != null ? Number(this.admin.minimum_delivery_free_cost) : 0,
             city_id: this.admin.city_id,
           })
           .then((res) => {
@@ -575,6 +596,7 @@ export default {
                 name: "",
                 name_ar: "",
                 cost: null,
+                minimum_delivery_free_cost: 0,
                 city_id: "",
               };
               this.connecting = false;
@@ -604,6 +626,7 @@ export default {
                 name: "",
                 name_ar: "",
                 cost: null,
+                minimum_delivery_free_cost: 0,
                 city_id: "",
               };
               this.connecting = false;
