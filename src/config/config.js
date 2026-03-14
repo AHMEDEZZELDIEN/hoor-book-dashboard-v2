@@ -1,4 +1,5 @@
 export const BASE_API = '/api';
+// export const BASE_API = 'https://api.hoorbookapp.com';
 export const BASE_URL = 'https://hoorbooks.s3.eu-west-2.amazonaws.com/';
 // export const BASE_API = 'https://hoorbookapp.com';
 // export const BASE_URL = 'https://hoorbookapp.com/';

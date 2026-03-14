@@ -211,6 +211,41 @@
           </v-card>
         </v-dialog>
         <!-- End Add/Edit Dialog Form -->
+
+        <!-- Start Refund / Update User Points Dialog -->
+        <v-dialog v-model="refundDialog" persistent max-width="600px">
+          <v-card>
+            <v-card-title>
+              <span>تحديث نقاط المستخدم</span>
+              <v-spacer></v-spacer>
+              <v-btn icon small @click="closeRefundDialog">
+                <v-icon>close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-text v-if="refundOrderId">
+              <div class="mb-3">
+                <b>رقم الطلب: </b>#{{ refundOrderId }}
+              </div>
+              <VTextFieldWithValidation
+                label="قيمة الاسترداد"
+                rules="required"
+                type="number"
+                prepend-icon="lock"
+                v-model="refund_price"
+              />
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                @click="submitRefundPoints"
+                :disabled="refundConnecting || !refund_price"
+                :loading="refundConnecting"
+                color="primary"
+              >إرسال</v-btn>
+              <v-btn @click="closeRefundDialog" color="secondary">إغلاق</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <!-- End Refund / Update User Points Dialog -->
       </v-toolbar>
 
       <!-- filter -->
@@ -536,6 +571,24 @@
             <span>تعديل</span>
           </v-tooltip>
           <!-- end Edit action -->
+
+          <!-- start Refund / Update user points action -->
+          <v-tooltip right>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="green"
+                icon
+                x-small
+                v-bind="attrs"
+                v-on="on"
+                @click="openRefundDialog(item)"
+              >
+                <v-icon>account_balance_wallet</v-icon>
+              </v-btn>
+            </template>
+            <span>تحديث نقاط المستخدم</span>
+          </v-tooltip>
+          <!-- end Refund / Update user points action -->
         </template>
         
         <template slot="pageText" slot-scope="props">
@@ -618,6 +671,10 @@ export default {
     order_meta: [],
     print_info: null,
     viewOrderDialog: false,
+    refundDialog: false,
+    refundOrderId: null,
+    refund_price: "",
+    refundConnecting: false,
     totalRequests: 0,
     pagination: {},
     loading: false,
@@ -803,6 +860,45 @@ export default {
       this.print_info = null;
       this.viewOrderDialog = false;
       this.printDialog = false;
+    },
+    openRefundDialog(item) {
+      this.refundOrderId = item.id;
+      this.refund_price = "";
+      this.refundDialog = true;
+    },
+    closeRefundDialog() {
+      this.refundDialog = false;
+      this.refundOrderId = null;
+      this.refund_price = "";
+      this.refundConnecting = false;
+    },
+    submitRefundPoints() {
+      this.refundConnecting = true;
+      const endpoint = `${this.baseApi}/api/admin/orders/update-user-points`;
+      this.$http
+        .post(endpoint, {
+          order_id: this.refundOrderId,
+          refund_price: this.refund_price,
+        })
+        .then(() => {
+          this.showNotification("تمت العملية بنجاح");
+          this.closeRefundDialog();
+          if (this.isFiltering) {
+            this.fetchFilter();
+          } else {
+            this.fetch();
+          }
+        })
+        .catch(({ response }) => {
+          if (response && response.data && response.data.errors) {
+            this.showNotification(response.data.errors.join ? response.data.errors.join(" ") : JSON.stringify(response.data.errors));
+          } else {
+            this.showNotification("حدث خطأ");
+          }
+        })
+        .finally(() => {
+          this.refundConnecting = false;
+        });
     },
     viewPrintDialog(item) {
       this.printDialog = !this.printDialog;
