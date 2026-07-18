@@ -154,6 +154,35 @@
                     prepend-icon="lock"
                     type="text"
                   />
+
+                  <v-menu
+                    v-model="menu2"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        :value="admin.expire_at"
+                        label="تاريخ الانتهاء"
+                        persistent-hint
+                        prepend-icon="mdi-calendar"
+                        readonly
+                        clearable
+                        v-bind="attrs"
+                        v-on="on"
+                        @click:clear="admin.expire_at = null"
+                      ></v-text-field>
+                    </template>
+
+                    <v-date-picker
+                      v-model="admin.expire_at"
+                      no-title
+                      @input="menu2 = false"
+                    ></v-date-picker>
+                  </v-menu>
                   
                   
                   <VFileInputWithValidation
@@ -498,6 +527,8 @@
         </v-dialog>
         <!-- End Add/Edit Dialog Form -->
         <!-- Start Print Dialog Form -->
+
+
         <v-dialog v-model="printDialog" persistent max-width="600px">
   <v-card>
     <v-card-title>
@@ -519,6 +550,20 @@
         <div class=" text-center product-name">
           {{ print_info.name }}
         </div>
+        <template v-if="showPrintDates">
+          <div
+            v-if="print_info.updated_at"
+            class="text-center product-production-date"
+          >
+            تاريخ الإنتاج: {{ print_info.updated_at }}
+          </div>
+          <div
+            v-if="print_info.expire_at"
+            class="text-center product-expire-date"
+          >
+            تاريخ الانتهاء: {{ print_info.expire_at }}
+          </div>
+        </template>
         <!-- Center the Span -->
         <div class="pt-1 text-center">
           <span class="px-2 printing-padding" style="border:1px solid black">
@@ -527,12 +572,28 @@
         </div> 
       
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions class="flex-wrap">
+      <div class="d-flex align-items-center print-dates-toggle">
+        <v-switch
+          v-model="showPrintDates"
+          color="primary"
+          hide-details
+          class="ma-0 pa-0"
+        ></v-switch>
+        <span class="mr-2">
+          إظهار تاريخ الإنتاج وتاريخ الانتهاء في الطباعة
+        </span>
+      </div>
+
+      <v-spacer></v-spacer>
+
       <v-btn @click="print" color="primary">طباعة</v-btn>
       <v-btn @click="close" color="secondary">إغلاق</v-btn>
     </v-card-actions>
   </v-card>
 </v-dialog>
+
+
 
         <!-- End Add/Edit Dialog Form -->
 
@@ -616,12 +677,44 @@
                       </v-col>
 
                       <v-col class="pa-2" cols="12" lg="4" sm="6">
+                        <v-menu
+                          v-model="filterExpireMenu"
+                          :close-on-content-click="false"
+                          transition="scale-transition"
+                          offset-y
+                          max-width="290px"
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              :value="filter.expire_at_before"
+                              label="تاريخ الانتهاء قبل"
+                              persistent-hint
+                              prepend-icon="mdi-calendar"
+                              readonly
+                              clearable
+                              v-bind="attrs"
+                              v-on="on"
+                              @click:clear="filter.expire_at_before = null"
+                            ></v-text-field>
+                          </template>
+
+                          <v-date-picker
+                            v-model="filter.expire_at_before"
+                            no-title
+                            @input="filterExpireMenu = false"
+                          ></v-date-picker>
+                        </v-menu>
+                      </v-col>
+
+                      <v-col class="pa-2" cols="12" lg="4" sm="6">
                         <v-checkbox
                           v-model="filter.deleted_at"
                           label="المنتجات المحذوفة مؤقتا"
                           color="success"
                           ></v-checkbox>
                       </v-col>
+
 
 
                     </v-row>
@@ -779,6 +872,9 @@
           </div>
           <div v-if="item.updated_at != null">
             <b>تاريخ التحديث: </b> {{ item.updated_at }}
+          </div>
+          <div v-if="item.expire_at != null">
+            <b>تاريخ الانتهاء: </b> {{ item.expire_at }}
           </div>
           <v-chip v-else small color="secondary" dark>غير متوفر</v-chip>
         </template>
@@ -939,11 +1035,14 @@ export default {
     },
   },
   data: () => ({
+    menu2: false,
+    filterExpireMenu: false,
     admin: {
       name: "",
       name_ar: "",
       searching_name: "",
       searching_name_ar: "",
+      expire_at: null,
       desc: "",
       stock: null,
       user_price_of_piece: null,
@@ -964,11 +1063,13 @@ export default {
       slider: false,
     },
     print_info: null,
+    showPrintDates: false,
     filter: {
       name: "",
       name_ar: "",
       searching_name: "",
       searching_name_ar: "",
+      expire_at_before: null,
       serial_number: "",
       category_id: null,
       deleted_at: false,
@@ -1065,9 +1166,10 @@ export default {
   methods: {
     ...mapActions(["showNotification"]),
     viewPrintDialog(item) {
-      this.printDialog = !this.printDialog;
       this.print_info = item;
-      console.log('print_info >>', this.print_info);
+      this.showPrintDates = false;
+      this.printDialog = true;
+      console.log("print_info >>", this.print_info);
     },
     print() {
     const printContent = document.getElementById('print_info').innerHTML;
@@ -1086,13 +1188,15 @@ export default {
         margin-bottom: 2px; /* Reduce space below QR code */
       }
 
-      .product-id,  
-      .product-name {  
-        margin: 1px 0;  /* Minimal space */
-        padding: 0;  /* Remove any padding */
-        text-align: center; 
-        font-size: 16px; /* Slightly smaller font */
-        line-height: 1.2; /* Reduce line height */
+      .product-id,
+      .product-name,
+      .product-production-date,
+      .product-expire-date {
+        margin: 1px 0;
+        padding: 0;
+        text-align: center;
+        font-size: 16px;
+        line-height: 1.2;
       }
 
       .printing-padding {  
@@ -1211,7 +1315,10 @@ export default {
         if (this.filter.name != '') endpoint += `&name=${this.filter.name}`;
         if (this.filter.category_id != null) endpoint += `&category_id=${this.filter.category_id}`;
         if (this.filter.deleted_at != false) endpoint += `&deleted_at=${this.filter.deleted_at}`;
-        if (this.filter.serial_number != false) endpoint += `&serial_number=${this.filter.serial_number}`;
+        if (this.filter.serial_number != false) endpoint += `&serial_number=${encodeURIComponent(this.filter.serial_number)}`;
+        if (this.filter.expire_at_before) {
+          endpoint += `&expire_at_before=${encodeURIComponent(this.filter.expire_at_before)}`;
+        }
         if (this.filter.sortingModel.sortingDirection != null) {
     endpoint += `&sortingModel[sortingExpression]=${encodeURIComponent(this.filter.sortingModel.sortingExpression)}` +
                 `&sortingModel[sortingDirection]=${encodeURIComponent(this.filter.sortingModel.sortingDirection)}`;
@@ -1235,6 +1342,7 @@ export default {
       });
     },
     clearFilter() {
+      this.filterExpireMenu = false;
       this.page = 1;
       this.fetch();
       this.isFiltering = false;
@@ -1243,6 +1351,7 @@ export default {
         name_ar: "",
         searching_name: "",
         searching_name_ar: "",
+        expire_at_before: null,
         serial_number:"",
         deleted_at:false,
         category_id: null,
@@ -1254,8 +1363,10 @@ export default {
     },
     close() {
       this.errors = [];
+      this.menu2 = false;
       this.dialog = false;
       this.print_info = null;
+      this.showPrintDates = false;
       this.printDialog = false;
       this.viewDescriptionDialog = false;
       this.admin = {
@@ -1263,6 +1374,7 @@ export default {
         name_ar: "",
         searching_name: "",
         searching_name_ar: "",
+        expire_at: null,
         desc: "",
         stock: null,
         user_price_of_piece: null,
@@ -1303,6 +1415,7 @@ export default {
         this.admin.name_ar = item.name_ar;
         this.admin.searching_name = item.searching_name;
         this.admin.searching_name_ar = item.searching_name_ar;
+        this.admin.expire_at = item.expire_at;
         this.admin.desc = item.desc;
         this.admin.stock = item.stock;
         this.admin.user_price_of_piece = item.user_price_of_piece;
@@ -1342,6 +1455,7 @@ export default {
       if (this.admin.name_ar) formdata.append("name_ar", this.admin.name_ar);
       if (this.admin.searching_name) formdata.append("searching_name", this.admin.searching_name);
       if (this.admin.searching_name_ar) formdata.append("searching_name_ar", this.admin.searching_name_ar);
+      if (this.admin.expire_at) formdata.append("expire_at", this.admin.expire_at);
       if (this.admin.desc) formdata.append("desc", this.admin.desc);
       if (this.admin.stock) formdata.append("stock", Number(this.admin.stock));
       if (this.admin.user_price_of_piece) formdata.append("user_price_of_piece", Number(this.admin.user_price_of_piece));
@@ -1414,6 +1528,7 @@ export default {
                 name_ar: "",
                 searching_name: "",
                 searching_name_ar: "",
+                expire_at: null,
                 desc: "",
                 stock: null,
                 user_price_of_piece: null,
@@ -1461,6 +1576,7 @@ export default {
                 name_ar: "",
                 searching_name: "",
                 searching_name_ar: "",
+                expire_at: null,
                 desc: "",
                 stock: null,
                 user_price_of_piece: null,
@@ -1658,6 +1774,10 @@ export default {
 }
 .align-items-center {
   align-items: center;
+}
+.print-dates-toggle {
+  min-width: 100%;
+  margin-bottom: 12px;
 }
 .fz12 {
   font-size: 12px;
