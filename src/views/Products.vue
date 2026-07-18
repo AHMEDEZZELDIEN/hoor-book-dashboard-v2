@@ -555,7 +555,8 @@
             v-if="print_info.updated_at"
             class="text-center product-production-date"
           >
-            تاريخ الإنتاج: {{ print_info.updated_at ? print_info.updated_at.split('T')[0].split(' ')[0] : '' }}          </div>
+            تاريخ الإنتاج: {{ print_info.updated_at }}
+          </div>
           <div
             v-if="print_info.expire_at"
             class="text-center product-expire-date"
